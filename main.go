@@ -13,7 +13,7 @@ type Server struct {
 }
 
 type ServerConfig struct {
-	MaxPlayers int    `json:"maxPlayesr"`
+	MaxPlayers int    `json:"maxPlayers"`
 	Bind       string `json:"bind"`
 	Name       string `json:"name"`
 }

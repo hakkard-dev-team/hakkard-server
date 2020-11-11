@@ -1,5 +1,6 @@
 {
   "maxPlayers": 5,
   "name": "HakkarDev",
-  "bind": "0.0.0.0:6666"
+  "bind": "0.0.0.0:6666",
+  "defaultLevel": "test"
 }

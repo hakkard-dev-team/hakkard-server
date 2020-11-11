@@ -116,9 +116,26 @@ func (g *Game) CreatePlayer(playerName string, playerType string) {
 	}
 	g.addPlayer(player)
 	player.InitDefaultAttributes()
+	g.SavePlayer(player)
 }
 
 func (g *Game) GetPlayerByName(playerName string) (Player, bool) {
 	player, ok := g.players[playerName]
 	return player, ok
+}
+
+func (g *Game) SavePlayer(player Player) bool {
+	data, err := json.MarshalIndent(player, "", "	")
+	if err == nil {
+		playerFileLocation := g.getPlayerFileName(player.Name)
+
+		if ioerror := ioutil.WriteFile(playerFileLocation, data, 0600); ioerror != nil {
+			log.Warning("Could not save player %s: %v", player.Name, ioerror)
+			return false
+		}
+	} else {
+		log.Warning("Could not Marshal player data %s: %v", player.Name, err)
+		return false
+	}
+	return true
 }

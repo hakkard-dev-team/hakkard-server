@@ -4,7 +4,7 @@ type Level struct {
 	Key         string `json:"key"`
 	Name        string `json:"name"`
 	Exits       []Exit `json:"exits"`
-	Description string `json"description"`
+	Description string `json:"description"`
 }
 
 type Exit struct {

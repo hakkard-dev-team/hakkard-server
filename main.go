@@ -6,6 +6,8 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"os"
+
+	"github.com/hakkard-dev-team/hakkard-server/game"
 )
 
 type Server struct {
@@ -20,12 +22,12 @@ type ServerConfig struct {
 
 func main() {
 	log.Info("Parsing Config")
-	conf, err := parseConfig()
+	_, err := parseConfig()
 	if err != nil {
 		log.Critical("Could not parse config: " + err.Error())
 		os.Exit(-1)
 	}
-	log.Debug(conf.MaxPlayers)
+	game.InitGame()
 }
 
 func parseConfig() (ServerConfig, error) {

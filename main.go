@@ -48,7 +48,8 @@ func main() {
 			continue
 		}
 
-		go handleConnection(conn, game)
+		msgchan := make(chan string)
+		go handleConnection(conn, game, msgchan)
 	}
 
 }
@@ -63,7 +64,7 @@ func promptMessage(c net.Conn, bufc *bufio.Reader, message string) string {
 	}
 }
 
-func handleConnection(c net.Conn, g *game.Game) {
+func handleConnection(c net.Conn, g *game.Game, msgchan chan<- string) {
 	bufc := bufio.NewReader(c)
 	defer c.Close()
 
@@ -105,6 +106,15 @@ func handleConnection(c net.Conn, g *game.Game) {
 	client := game.NewClient(c, player)
 
 	io.WriteString(c, fmt.Sprintf("Welcome, %s!\n\r", client.Player.Name))
+
+	location, ok := g.GetLevel(client.Player.Location)
+	if ok {
+		location.OnEnterRoom(g, client)
+	}
+
+	// Handle I/O
+	go client.ReadLinesInto(msgchan, g)
+	client.WriteLinesFrom(client.Chan)
 
 }
 

@@ -41,7 +41,7 @@ func (p Player) VerifyPassword(pw string) bool {
 	return true
 }
 
-func (p Player) SetPassword(pw string) bool {
+func (p *Player) SetPassword(pw string) bool {
 	bytePw := []byte(pw)
 
 	hash, err := bcrypt.GenerateFromPassword(bytePw, bcrypt.MinCost)
@@ -49,7 +49,6 @@ func (p Player) SetPassword(pw string) bool {
 		log.Warning(fmt.Sprintf("Error hashing password: %v", err))
 		return false
 	}
-	log.Debug(string(hash))
 	p.PwHash = string(hash)
 	return true
 }

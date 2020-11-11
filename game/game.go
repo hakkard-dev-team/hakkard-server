@@ -117,7 +117,6 @@ func (g *Game) CreatePlayer(playerName string, playerType string, pw string) {
 	g.addPlayer(player)
 	player.InitDefaultAttributes()
 	player.SetPassword(pw)
-
 	g.SavePlayer(player)
 }
 

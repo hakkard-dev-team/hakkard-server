@@ -2,9 +2,12 @@ package game
 
 import (
 	"bufio"
+	"fmt"
 	"io"
 	"net"
 	"strings"
+
+	log "github.com/Matt-Gleich/logoru"
 )
 
 type Client struct {
@@ -42,5 +45,57 @@ func (c Client) ReadLines(ch chan<- string) {
 			continue
 		}
 		c.WriteLineToUser("You wrote: " + userLine)
+	}
+}
+
+func (c Client) ReadLinesInto(ch chan<- string, g *Game) {
+	bufc := bufio.NewReader(c.Conn)
+
+	for {
+		line, err := bufc.ReadString('\n')
+		if err != nil {
+			break
+		}
+		userLine := strings.TrimSpace(line)
+
+		if userLine == "" {
+			continue
+		}
+
+		lineParts := strings.SplitN(userLine, " ", 2)
+		var command, commandText string
+		if len(lineParts) > 0 {
+			command = lineParts[0]
+		}
+		if len(lineParts) > 1 {
+			commandText = lineParts[1]
+		}
+
+		log.Debug(fmt.Sprintf("Command by %s: %s  -  %s", c.Player.Name, command, commandText))
+
+		switch command {
+		case "look":
+			playerLoc, ok := g.GetLevel(c.Player.Location)
+			if ok {
+				for _, dir := range playerLoc.Exits {
+					place, ok := g.GetLevel(dir.Target)
+					if ok {
+						c.WriteLineToUser(fmt.Sprintf("When you look %s you see %s", dir.Direction, place.Name))
+					}
+				}
+			}
+			c.WriteLineToUser(playerLoc.Description)
+		default:
+			continue
+		}
+	}
+}
+
+func (c Client) WriteLinesFrom(ch <-chan string) {
+	for msg := range ch {
+		_, err := io.WriteString(c.Conn, msg)
+		if err != nil {
+			return
+		}
 	}
 }

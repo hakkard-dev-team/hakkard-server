@@ -79,19 +79,26 @@ func handleConnection(c net.Conn, g *game.Game, msgchan chan<- string) {
 		}
 
 		name = promptMessage(c, bufc, "What name do you wish?")
-		ok := g.LoadPlayer(name)
+		ok, plr := g.LoadPlayer(name)
 		if ok == false {
 			questions++
 			io.WriteString(c, fmt.Sprintf("Username %s does not exist\n\r", name))
 			answer := promptMessage(c, bufc, "Create it? [y|n]")
 
 			if answer == "y" {
+				password := promptMessage(c, bufc, "What is your desired password?")
 				io.WriteString(c, "We offer multiple player types. Please choose from this list\n- Mage: Magic User\n-Fighter: Wields Weapons\n\r")
 				playerType := promptMessage(c, bufc, "What type do you wish? [mage|fighter]")
-				g.CreatePlayer(name, playerType)
+				g.CreatePlayer(name, playerType, password)
 				break
 			}
 		} else {
+			password := promptMessage(c, bufc, "Password: ")
+			pwOk := plr.VerifyPassword(password)
+			if !pwOk {
+				io.WriteString(c, "Invalid password.")
+				continue
+			}
 			break
 		}
 	}

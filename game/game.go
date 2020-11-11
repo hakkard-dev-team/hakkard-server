@@ -80,27 +80,27 @@ func (g *Game) getPlayerFileName(playerName string) string {
 	return "./static/data/" + playerName + ".player"
 }
 
-func (g *Game) LoadPlayer(playerName string) bool {
+func (g *Game) LoadPlayer(playerName string) (bool, Player) {
 	playerFileLocation := g.getPlayerFileName(playerName)
 
 	log.Debug("Loading player %s", playerName)
 	fileContent, fileIoErr := ioutil.ReadFile(playerFileLocation)
 	if fileIoErr != nil {
 		log.Warning("Could not load player file %s: %v", playerFileLocation, fileIoErr)
-		return false
+		return false, Player{}
 	}
 	player := Player{}
 	if jsonErr := json.Unmarshal(fileContent, &player); jsonErr != nil {
 		log.Warning("Invalid player file %s: %v", playerFileLocation, jsonErr)
-		return false
+		return false, Player{}
 	}
 	log.Success("Loaded player %s", playerName)
 	g.addPlayer(player)
 
-	return true
+	return true, player
 }
 
-func (g *Game) CreatePlayer(playerName string, playerType string) {
+func (g *Game) CreatePlayer(playerName string, playerType string, pw string) {
 	playerFileLocation := g.getPlayerFileName(playerName)
 
 	log.Debug("Creating player %s", playerName)
@@ -116,6 +116,8 @@ func (g *Game) CreatePlayer(playerName string, playerType string) {
 	}
 	g.addPlayer(player)
 	player.InitDefaultAttributes()
+	player.SetPassword(pw)
+
 	g.SavePlayer(player)
 }
 

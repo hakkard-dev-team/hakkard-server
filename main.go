@@ -63,7 +63,7 @@ func promptMessage(c net.Conn, bufc *bufio.Reader, message string) string {
 	}
 }
 
-func handleConnection(c net.Conn, game *game.Game) {
+func handleConnection(c net.Conn, g *game.Game) {
 	bufc := bufio.NewReader(c)
 	defer c.Close()
 
@@ -78,7 +78,7 @@ func handleConnection(c net.Conn, game *game.Game) {
 		}
 
 		name = promptMessage(c, bufc, "What name do you wish?")
-		ok := game.LoadPlayer(name)
+		ok := g.LoadPlayer(name)
 		if ok == false {
 			questions++
 			io.WriteString(c, fmt.Sprintf("Username %s does not exist\n\r", name))
@@ -87,7 +87,7 @@ func handleConnection(c net.Conn, game *game.Game) {
 			if answer == "y" {
 				io.WriteString(c, "We offer multiple player types. Please choose from this list\n- Mage: Magic User\n-Fighter: Wields Weapons\n\r")
 				playerType := promptMessage(c, bufc, "What type do you wish? [mage|fighter]")
-				game.CreatePlayer(name, playerType)
+				g.CreatePlayer(name, playerType)
 				break
 			}
 		} else {
@@ -95,7 +95,7 @@ func handleConnection(c net.Conn, game *game.Game) {
 		}
 	}
 
-	player, ok := game.GetPlayerByName(name)
+	player, ok := g.GetPlayerByName(name)
 	if !ok {
 		log.Warning("Error getting Player object")
 		io.WriteString(c, "Error getting Player object\n\r")
@@ -103,6 +103,8 @@ func handleConnection(c net.Conn, game *game.Game) {
 	}
 
 	client := game.NewClient(c, player)
+
+	io.WriteString(c, fmt.Sprintf("Welcome, %s!\n\r", client.Player.Name))
 
 }
 

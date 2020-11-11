@@ -15,7 +15,7 @@ type Game struct {
 	DefaultLevel Level
 }
 
-func InitGame() *Game {
+func InitGame(defaultLevelKey string) *Game {
 	log.Info("Initializing Game...")
 	game := &Game{
 		players: make(map[string]Player),
@@ -23,6 +23,14 @@ func InitGame() *Game {
 	}
 
 	game.initLevels()
+
+	// Set Default Level
+	defaultLevel, err := game.GetLevel(defaultLevelKey)
+	if err != true {
+		log.Critical("Invalid default level! Check static/server.json")
+		os.Exit(-1)
+	}
+	game.DefaultLevel = defaultLevel
 
 	return game
 }
@@ -48,7 +56,69 @@ func (g Game) initLevels() error {
 			return jsonErr
 		}
 		log.Debug("Loaded level %s", info.Name())
+		g.addLevel(level)
 		return nil
 	}
 	return filepath.Walk("./content/levels/", levelWalker)
+}
+
+func (g *Game) GetLevel(key string) (Level, bool) {
+	level, ok := g.levels[key]
+	return level, ok
+}
+
+func (g Game) addLevel(lvl Level) error {
+	g.levels[lvl.Key] = lvl
+	return nil
+}
+func (g Game) addPlayer(plr Player) error {
+	g.players[plr.Name] = plr
+	return nil
+}
+
+func (g *Game) getPlayerFileName(playerName string) string {
+	return "./static/data/" + playerName + ".player"
+}
+
+func (g *Game) LoadPlayer(playerName string) bool {
+	playerFileLocation := g.getPlayerFileName(playerName)
+
+	log.Debug("Loading player %s", playerName)
+	fileContent, fileIoErr := ioutil.ReadFile(playerFileLocation)
+	if fileIoErr != nil {
+		log.Warning("Could not load player file %s: %v", playerFileLocation, fileIoErr)
+		return false
+	}
+	player := Player{}
+	if jsonErr := json.Unmarshal(fileContent, &player); jsonErr != nil {
+		log.Warning("Invalid player file %s: %v", playerFileLocation, jsonErr)
+		return false
+	}
+	log.Success("Loaded player %s", playerName)
+	g.addPlayer(player)
+
+	return true
+}
+
+func (g *Game) CreatePlayer(playerName string, playerType string) {
+	playerFileLocation := g.getPlayerFileName(playerName)
+
+	log.Debug("Creating player %s", playerName)
+	if _, err := os.Stat(playerFileLocation); err == nil {
+		g.LoadPlayer(playerName)
+		log.Debug("Player %s already exists, loading...", playerName)
+		return
+	}
+	player := Player{
+		Name:       playerName,
+		PlayerType: playerType,
+		Location:   g.DefaultLevel.Key,
+	}
+	g.addPlayer(player)
+	player.InitDefaultAttributes()
+}
+
+func (g *Game) GetPlayerByName(playerName string) (Player, bool) {
+	player, ok := g.players[playerName]
+	return player, ok
 }

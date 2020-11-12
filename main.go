@@ -34,14 +34,14 @@ func main() {
 
 	ln, err := net.Listen("tcp", conf.Bind)
 	if err != nil {
-		log.Critical("Error binding network port: %v", err.Error())
+		log.Critical(fmt.Sprintf("Error binding network port: %v", err.Error()))
 	}
-	log.Success("Listening on %s", ln.Addr())
+	log.Success(fmt.Sprintf("Listening on %s", ln.Addr()))
 
 	for {
 		conn, err := ln.Accept()
 		if err != nil {
-			log.Warning("Error accepting new connection %v", err)
+			log.Warning(fmt.Sprintf("Error accepting new connection %v", err))
 			continue
 		}
 
@@ -65,7 +65,7 @@ func handleConnection(c net.Conn, g *game.Game, msgchan chan<- string) {
 	bufc := bufio.NewReader(c)
 	defer c.Close()
 
-	log.Info("New Connection from %s", c.RemoteAddr())
+	log.Info(fmt.Sprintf("New Connection from %s", c.RemoteAddr()))
 
 	questions := 0
 	var name string

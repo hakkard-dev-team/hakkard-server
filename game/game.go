@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"fmt"
 )
 
 type Game struct {
@@ -44,18 +45,18 @@ func (g Game) initLevels() error {
 		}
 		fileContent, fileIoErr := ioutil.ReadFile(path)
 		if fileIoErr != nil {
-			log.Warning("File %s could not be loader", path)
+			log.Warning(fmt.Sprintf("File %s could not be loader", path))
 			log.Warning(fileIoErr.Error())
 			return fileIoErr
 		}
 
 		level := Level{}
 		if jsonErr := json.Unmarshal(fileContent, &level); jsonErr != nil {
-			log.Warning("File %s could not be parsed", path)
+			log.Warning(fmt.Sprintf("File %s could not be parsed", path))
 			log.Warning(jsonErr.Error())
 			return jsonErr
 		}
-		log.Debug("Loaded level %s", info.Name())
+		log.Debug(fmt.Sprintf("Loaded level %s", info.Name()))
 		g.addLevel(level)
 		return nil
 	}
@@ -83,18 +84,18 @@ func (g *Game) getPlayerFileName(playerName string) string {
 func (g *Game) LoadPlayer(playerName string) (bool, Player) {
 	playerFileLocation := g.getPlayerFileName(playerName)
 
-	log.Debug("Loading player %s", playerName)
+	log.Debug(fmt.Sprintf("Loading player %s", playerName))
 	fileContent, fileIoErr := ioutil.ReadFile(playerFileLocation)
 	if fileIoErr != nil {
-		log.Warning("Could not load player file %s: %v", playerFileLocation, fileIoErr)
+		log.Warning(fmt.Sprintf("Could not load player file %s: %v", playerFileLocation, fileIoErr))
 		return false, Player{}
 	}
 	player := Player{}
 	if jsonErr := json.Unmarshal(fileContent, &player); jsonErr != nil {
-		log.Warning("Invalid player file %s: %v", playerFileLocation, jsonErr)
+		log.Warning(fmt.Sprintf("Invalid player file %s: %v", playerFileLocation, jsonErr))
 		return false, Player{}
 	}
-	log.Success("Loaded player %s", playerName)
+	log.Success(fmt.Sprintf("Loaded player %s", playerName))
 	g.addPlayer(player)
 
 	return true, player
@@ -103,10 +104,10 @@ func (g *Game) LoadPlayer(playerName string) (bool, Player) {
 func (g *Game) CreatePlayer(playerName string, playerType string, pw string) {
 	playerFileLocation := g.getPlayerFileName(playerName)
 
-	log.Debug("Creating player %s", playerName)
+	log.Debug(fmt.Sprintf("Creating player %s", playerName))
 	if _, err := os.Stat(playerFileLocation); err == nil {
 		g.LoadPlayer(playerName)
-		log.Debug("Player %s already exists, loading...", playerName)
+		log.Debug(fmt.Sprintf("Player %s already exists, loading...", playerName))
 		return
 	}
 	player := Player{
@@ -131,11 +132,11 @@ func (g *Game) SavePlayer(player Player) bool {
 		playerFileLocation := g.getPlayerFileName(player.Name)
 
 		if ioerror := ioutil.WriteFile(playerFileLocation, data, 0600); ioerror != nil {
-			log.Warning("Could not save player %s: %v", player.Name, ioerror)
+			log.Warning(fmt.Sprintf("Could not save player %s: %v", player.Name, ioerror))
 			return false
 		}
 	} else {
-		log.Warning("Could not Marshal player data %s: %v", player.Name, err)
+		log.Warning(fmt.Sprintf("Could not Marshal player data %s: %v", player.Name, err))
 		return false
 	}
 	return true

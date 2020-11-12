@@ -8,6 +8,8 @@ import (
 	"strings"
 
 	log "github.com/Matt-Gleich/logoru"
+
+	"github.com/hakkard-dev-team/hakkard-server/game/commands"
 )
 
 type Client struct {
@@ -48,7 +50,7 @@ func (c Client) ReadLines(ch chan<- string) {
 	}
 }
 
-func (c Client) ReadLinesInto(ch chan<- string, g *Game) {
+func (c Client) ReadLinesInto(ch chan<- string, g *Game, r commands.Route) {
 	bufc := bufio.NewReader(c.Conn)
 
 	for {
@@ -73,7 +75,11 @@ func (c Client) ReadLinesInto(ch chan<- string, g *Game) {
 
 		log.Debug(fmt.Sprintf("Command by %s: %s  -  %s", c.Player.Name, command, commandText))
 
-		switch command {
+		if ok := r.FindAndExecute(g, c.Player, command, commandText); !ok {
+			c.WriteLineToUser("Huh?")
+		}
+
+		/*		switch command {
 		case "look":
 			playerLoc, ok := g.GetLevel(c.Player.Location)
 			if ok {
@@ -87,7 +93,7 @@ func (c Client) ReadLinesInto(ch chan<- string, g *Game) {
 			c.WriteLineToUser(playerLoc.Description)
 		default:
 			continue
-		}
+		}*/
 	}
 }
 

@@ -3,8 +3,7 @@ package commands
 import (
 	"errors"
 
-	"github.com/hakkard-dev-team/"
-	"github.com/hakkard-dev-team/game/"
+	"github.com/hakkard-dev-team/hakkard-server/game"
 )
 
 type HandlerFunc func(*CmdContext)
@@ -45,12 +44,19 @@ func (r *Route) Desc(description string) *Route {
 }
 
 // Creates a new Context
-func NewContext(g: *game.Game, p: *game.Player, cmd string, args string) *Context {
+func NewContext(g *game.Game, p *game.Player, cmd string, args string) *Context {
 	return &Context {
 		Game: g,
 			Player: p,
 			Command: cmd,
 			Args: args,
+	}
+}
+
+// Creates a new Router
+func NewRouter() *Route {
+	return &Route {
+		Routes: []*Route{}
 	}
 }
 

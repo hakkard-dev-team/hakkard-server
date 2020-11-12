@@ -13,6 +13,13 @@ type Player struct {
 	Attributes []Attribute `json:"attributes"`
 	PlayerType string      `json:"playerType"`
 	PwHash     string      `json:"pwHash"`
+	Level int `json:"level"`
+	Currency int `json:"currency"`
+	Inventory []string `json:"inventory"`
+	Wearing map[string]string `json:"wearing"`
+	Wielding []string `json:"wielding"`
+	Experience int `json:"experience"`
+
 }
 
 type Attribute struct {

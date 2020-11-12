@@ -15,9 +15,6 @@ import (
 	"github.com/hakkard-dev-team/hakkard-server/game"
 )
 
-type Server struct {
-	Config ServerConfig
-}
 
 type ServerConfig struct {
 	MaxPlayers      int    `json:"maxPlayers"`

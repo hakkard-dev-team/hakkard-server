@@ -25,3 +25,17 @@ func (l *Level) OnEnterRoom(g *Game, c Client) {
 	}
 
 }
+
+func (l *Level) GetLevelExits(c Client, g Game) {
+	playerLoc, ok := g.GetLevel(c.Player.Location)
+	var exits = ""
+	if ok {
+		for _, dir := range playerLoc.Exits {
+			_, ok := g.GetLevel(dir.Target)
+			if ok {
+				exits += fmt.Sprintf("When you look %s you see %s. ", dir.Direction, dir.Target)
+			}
+		}
+	}
+	c.WriteLineToUser(exits)
+}

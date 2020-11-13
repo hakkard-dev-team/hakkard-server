@@ -72,6 +72,7 @@ func (g Game) initLevels() error {
 func (g *Game) initCommands(router *Route) error {
 	log.Info("Initializing Commands...")
 	MetaCommands(router)
+	MovementCommands(router)
 	return nil
 }
 

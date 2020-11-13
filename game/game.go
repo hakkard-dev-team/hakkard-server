@@ -14,7 +14,7 @@ type Game struct {
 	players      map[string]Player
 	levels       map[string]Level
 	DefaultLevel Level
-	Route        Route
+	Route        *Route
 }
 
 func InitGame(defaultLevelKey string) *Game {
@@ -28,6 +28,7 @@ func InitGame(defaultLevelKey string) *Game {
 
 	router := NewRouter()
 	game.initCommands(router)
+	game.Route = router
 
 	// Set Default Level
 	defaultLevel, err := game.GetLevel(defaultLevelKey)

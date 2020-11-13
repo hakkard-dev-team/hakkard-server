@@ -71,7 +71,7 @@ func (c Client) ReadLinesInto(ch chan<- string, g *Game) {
 			commandText = lineParts[1]
 		}
 
-		log.Debug(fmt.Sprintf("Command by %s: %s  -  %s", c.Player.Name, command, commandText))
+		log.Debug(fmt.Sprintf("Command by %s: %s %s", c.Player.Name, command, commandText))
 
 		if ok := g.Route.FindAndExecute(g, &c, command, commandText); !ok {
 			c.WriteLineToUser("Huh?")

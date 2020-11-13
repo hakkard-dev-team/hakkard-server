@@ -3,6 +3,8 @@ package game
 import (
 	"errors"
 
+	log "github.com/Matt-Gleich/logoru"
+	"fmt"
 )
 
 type HandlerFunc func(*CmdContext)
@@ -78,6 +80,7 @@ func (r *Route) On(name string, handler HandlerFunc) *Route {
 // cmd : Command used by player
 // args : Arguments passed to the command by the player
 func (r *Route) FindAndExecute(g *Game, c *Client, cmd string, args string) bool {
+	log.Debug(fmt.Sprintf("Received command: \"%s\" and args: \"%s\"", cmd, args))
 	if rt := r.Find(cmd); rt != nil {
 		rt.Handler(NewContext(g, c, cmd, args))
 		return true
@@ -104,6 +107,7 @@ func (r *Route) AddRoute(route *Route) error {
 	if rt := r.Find(route.Name); rt != nil {
 		return errors.New("Route already exists")
 	}
+	log.Debug(fmt.Sprintf("Adding route %s", route.Name))
 
 	route.Parent = r
 	r.Routes = append(r.Routes, route)

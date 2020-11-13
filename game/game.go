@@ -70,7 +70,7 @@ func (g Game) initLevels() error {
 // Initializes commands
 func (g *Game) initCommands(router *Route) error {
 	log.Info("Initializing Commands...")
-
+	MetaCommands(router)
 	return nil
 }
 
@@ -151,4 +151,9 @@ func (g *Game) SavePlayer(player Player) bool {
 		return false
 	}
 	return true
+}
+
+func (g *Game) OnExit(client Client) {
+	g.SavePlayer(client.Player)
+	client.WriteLineToUser("Bye!")
 }

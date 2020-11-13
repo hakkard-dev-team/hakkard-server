@@ -12,7 +12,7 @@ type CmdContext struct {
 	Game *Game
 
 	// The current player
-	Player *Player
+	Client *Client
 
 	//The text of the command
 	Command string
@@ -43,10 +43,10 @@ func (r *Route) Desc(description string) *Route {
 }
 
 // Creates a new Context
-func NewContext(g *Game, p *Player, cmd string, args string) *CmdContext {
+func NewContext(g *Game, c *Client, cmd string, args string) *CmdContext {
 	return &CmdContext {
 		Game: g,
-			Player: p,
+			Client: c,
 			Command: cmd,
 			Args: args,
 	}
@@ -77,9 +77,9 @@ func (r *Route) On(name string, handler HandlerFunc) *Route {
 // p : Player object, passed to Context
 // cmd : Command used by player
 // args : Arguments passed to the command by the player
-func (r *Route) FindAndExecute(g *Game, p *Player, cmd string, args string) bool {
+func (r *Route) FindAndExecute(g *Game, c *Client, cmd string, args string) bool {
 	if rt := r.Find(cmd); rt != nil {
-		rt.Handler(NewContext(g, p, cmd, args))
+		rt.Handler(NewContext(g, c, cmd, args))
 		return true
 	}
 

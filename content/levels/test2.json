@@ -1,0 +1,12 @@
+{
+  "key": "test2",
+  "name": "Test area 2",
+  "description": "Testing the implementation of exits",
+  "exits": [
+    {
+      "target": "test",
+      "direction": "south",
+      "isHidden": false
+    }
+  ]
+}

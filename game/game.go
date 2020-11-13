@@ -8,15 +8,13 @@ import (
 	"os"
 	"path/filepath"
 	"fmt"
-
-	"github.com/hakkard-dev-team/hakkard-server/game/commands"
 )
 
 type Game struct {
 	players      map[string]Player
 	levels       map[string]Level
 	DefaultLevel Level
-	Route       commands.Route
+	Route        Route
 }
 
 func InitGame(defaultLevelKey string) *Game {
@@ -28,7 +26,7 @@ func InitGame(defaultLevelKey string) *Game {
 
 	game.initLevels()
 
-	router := commands.NewRouter()
+	router := NewRouter()
 	game.initCommands(router)
 
 	// Set Default Level
@@ -70,7 +68,7 @@ func (g Game) initLevels() error {
 }
 
 // Initializes commands
-func (g *Game) initCommands() error {
+func (g *Game) initCommands(router *Route) error {
 	log.Info("Initializing Commands...")
 
 	return nil

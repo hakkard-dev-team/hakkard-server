@@ -1,19 +1,18 @@
-package commands
+package game
 
 import (
 	"errors"
 
-	"github.com/hakkard-dev-team/hakkard-server/game"
 )
 
 type HandlerFunc func(*CmdContext)
 
 type CmdContext struct {
 	// The game object, for fetching data about other players
-	Game *game.Game
+	Game *Game
 
 	// The current player
-	Player *game.Player
+	Player *Player
 
 	//The text of the command
 	Command string
@@ -30,7 +29,7 @@ type Route struct {
 	Description string
 
 	// Route parent
-	Parent Route
+	Parent *Route
 
 	Handler HandlerFunc
 	Matcher func(string) bool
@@ -44,8 +43,8 @@ func (r *Route) Desc(description string) *Route {
 }
 
 // Creates a new Context
-func NewContext(g *game.Game, p *game.Player, cmd string, args string) *Context {
-	return &Context {
+func NewContext(g *Game, p *Player, cmd string, args string) *CmdContext {
+	return &CmdContext {
 		Game: g,
 			Player: p,
 			Command: cmd,
@@ -56,7 +55,7 @@ func NewContext(g *game.Game, p *game.Player, cmd string, args string) *Context 
 // Creates a new Router
 func NewRouter() *Route {
 	return &Route {
-		Routes: []*Route{}
+		Routes: []*Route{},
 	}
 }
 
@@ -78,7 +77,7 @@ func (r *Route) On(name string, handler HandlerFunc) *Route {
 // p : Player object, passed to Context
 // cmd : Command used by player
 // args : Arguments passed to the command by the player
-func (r *Route) FindAndExecute(g *game.Game, p *game.Player, cmd string, args string) bool {
+func (r *Route) FindAndExecute(g *Game, p *Player, cmd string, args string) bool {
 	if rt := r.Find(cmd); rt != nil {
 		rt.Handler(NewContext(g, p, cmd, args))
 		return true
@@ -95,7 +94,7 @@ func (r *Route) OnMatch(name string, matcher func(string) bool, handler HandlerF
 	rt := &Route {
 		Name: name,
 			Handler: handler,
-			Matcher: matcher
+			Matcher: matcher,
 	}
 	r.AddRoute(rt)
 	return rt

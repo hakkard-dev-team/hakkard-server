@@ -4,10 +4,10 @@ import (
 	log "github.com/Matt-Gleich/logoru"
 
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
-	"fmt"
 )
 
 type Game struct {
@@ -72,6 +72,8 @@ func (g Game) initLevels() error {
 func (g *Game) initCommands(router *Route) error {
 	log.Info("Initializing Commands...")
 	MetaCommands(router)
+	MovementCommands(router)
+
 	return nil
 }
 

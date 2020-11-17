@@ -14,6 +14,7 @@ type Game struct {
 	players      map[string]Player
 	levels       map[string]Level
 	DefaultLevel Level
+	Route        *Route
 }
 
 func InitGame(defaultLevelKey string) *Game {
@@ -24,6 +25,10 @@ func InitGame(defaultLevelKey string) *Game {
 	}
 
 	game.initLevels()
+
+	router := NewRouter()
+	game.initCommands(router)
+	game.Route = router
 
 	// Set Default Level
 	defaultLevel, err := game.GetLevel(defaultLevelKey)
@@ -61,6 +66,14 @@ func (g Game) initLevels() error {
 		return nil
 	}
 	return filepath.Walk("./content/levels/", levelWalker)
+}
+
+// Initializes commands
+func (g *Game) initCommands(router *Route) error {
+	log.Info("Initializing Commands...")
+	MetaCommands(router)
+	MovementCommands(router)
+	return nil
 }
 
 func (g *Game) GetLevel(key string) (Level, bool) {
@@ -140,4 +153,9 @@ func (g *Game) SavePlayer(player Player) bool {
 		return false
 	}
 	return true
+}
+
+func (g *Game) OnExit(client Client) {
+	g.SavePlayer(client.Player)
+	client.WriteLineToUser("Bye!")
 }

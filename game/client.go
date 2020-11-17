@@ -71,9 +71,13 @@ func (c Client) ReadLinesInto(ch chan<- string, g *Game) {
 			commandText = lineParts[1]
 		}
 
-		log.Debug(fmt.Sprintf("Command by %s: %s  -  %s", c.Player.Name, command, commandText))
+		log.Debug(fmt.Sprintf("Command by %s: %s %s", c.Player.Name, command, commandText))
 
-		switch command {
+		if ok := g.Route.FindAndExecute(g, &c, command, commandText); !ok {
+			c.WriteLineToUser("Huh?")
+		}
+
+		/*		switch command {
 		case "look":
 			playerLoc, ok := g.GetLevel(c.Player.Location)
 			if ok {
@@ -87,7 +91,7 @@ func (c Client) ReadLinesInto(ch chan<- string, g *Game) {
 			c.WriteLineToUser(playerLoc.Description)
 		default:
 			continue
-		}
+		}*/
 	}
 }
 
